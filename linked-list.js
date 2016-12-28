@@ -34,6 +34,18 @@ LinkedList.prototype = {
     const { current } = this.traverse(index)
     return current.data
   },
+
+  size() {
+    return this.length
+  },
+
+  toArray() {
+    return this.aggregate()
+  },
+
+  toString() {
+    return this.aggregate().toString()
+  }
 }
 
 Object.defineProperties(LinkedList.prototype, {
