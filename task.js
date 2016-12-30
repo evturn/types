@@ -124,6 +124,18 @@ Task.prototype = {
         taskB.fork(guard(reject), guard(resolve))
       ]
     }, cleanupBoth)
+  },
+
+  swap() {
+    return new Task((reject, resolve) => {
+      return this.fork(a => resolve(a), b => return reject(b))
+    }, this.cleanup)
+  },
+
+  rejectedMap(f) {
+    return new Task((reject, resolve) => {
+      return this.fork(a => reject(f(a)), b => resolve(b))
+    }, this.cleanup)
   }
 }
 
