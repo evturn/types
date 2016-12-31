@@ -136,8 +136,21 @@ Task.prototype = {
     return new Task((reject, resolve) => {
       return this.fork(a => reject(f(a)), b => resolve(b))
     }, this.cleanup)
+  },
+
+  cata(pattern) {
+    return this.fold(pattern.Rejected, pattern.Resolved)
+  },
+
+  empty() {
+    return new Task(_ => _)
+  },
+
+  toString() {
+    return 'Task'
   }
 }
 
 Task.of = Task.prototype.of
 Task.rejected = Task.prototype.rejected
+Task.empty = Task.prototype.empty
