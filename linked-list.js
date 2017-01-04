@@ -1,4 +1,4 @@
-function LinkedList() {
+export default function LinkedList() {
   this.length = 0
   this.head = null
 }
