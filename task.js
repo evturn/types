@@ -2,7 +2,7 @@ const delayed = typeof setImmediate !== 'undefined' ? setImmediate
               : typeof process !== 'undefined'      ? process.nextTick
               : /* otherwise */                       setTimeout
 
-function Task(computation, cleanup) {
+export default function Task(computation, cleanup) {
   this.fork = computation
   this.cleanup = cleanup || (_ => _)
 }
