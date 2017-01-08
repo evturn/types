@@ -23,3 +23,12 @@ function log() {
     })
   }
 }
+
+function map(transformFn) {
+  return read =>
+    (abort, fn) =>
+      read(abort, (end, data) =>
+        end
+          ? fn(end)
+          : fn(null, transformFn(data)))
+}
