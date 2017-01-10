@@ -32,3 +32,11 @@ function map(transformFn) {
           ? fn(end)
           : fn(null, transformFn(data)))
 }
+
+function pull(...args) {
+  const [stream] = args
+  if (stream.length === 1) {
+    return read => pull(read, ...args)
+  }
+  return args.map(fn => fn(stream))
+}
