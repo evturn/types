@@ -40,3 +40,25 @@ function pull(...args) {
   }
   return args.map(fn => fn(stream))
 }
+
+function flatmap(fn, queue=[]) {
+  return read => {
+    return function again(abort, cb) {
+      if (abort) {
+        return read(abort, cb)
+      }
+      if (queue.length) {
+        const [ _, ...rest ] = queue
+        return cb(null, [...rest])
+      }
+
+      read(null, (e, data) => {
+        if (e) {
+          return cb(e)
+        }
+        queue = fn(data)
+        again(null, cb)
+      })
+    }
+  }
+}
