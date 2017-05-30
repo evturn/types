@@ -2,52 +2,65 @@ const delayed = typeof setImmediate !== 'undefined' ? setImmediate
               : typeof process !== 'undefined'      ? process.nextTick
               : /* otherwise */                       setTimeout
 
-export default function Task(computation, cleanup) {
-  this.fork = computation
-  this.cleanup = cleanup || (_ => _)
-}
+class Task {
+  constructor(computation, cleanup) {
+    this.fork = computation
+    this.cleanup = cleanup || (_ => _)
+  }
 
+  static of(b) {
+    return new Task((_, resolve) => resolve(b))
+  }
 
-Task.prototype = {
-  constructor: Task,
+  static rejected(a) {
+    return new Task((reject) => reject(a))
+  }
+
+  static empty() {
+    return new Task(_ => _)
+  }
 
   of(b) {
-    return new Task((_, resolve) => resolve(b))
-  },
+    return Task.of(b)
+  }
 
   rejected(a) {
-    return new Task((reject) => reject(a))
-  },
+    return Task.rejected(a)
+  }
+
+  empty() {
+    return Task.empty()
+  }
 
   map(f) {
     return new Task((reject, resolve) => {
       return this.fork(a => reject(a), b => resolve(f(b)))
     }, this.cleanup)
-  },
+  }
 
   chain(f) {
     return new Task((reject, resolve) => {
       return this.fork(a => reject(a), b => f(b).fork(reject, resolve))
     }, this.cleanup)
-  },
+  }
 
   orElse(f) {
     return new Task((reject, resolve) => {
       return this.fork(a => f(a).fork(reject, resolve), b => resolve(b))
     }, this.cleanup)
-  },
+  }
 
   fold(f, g) {
     return new Task((_, resolve) => {
       return this.fork(a => resolve(f(a)), b => resolve(g(b)))
     }, this.cleanup)
-  },
+  }
 
   bimap(f, g) {
     return new Task((reject, resolve) => {
       return this.fork(a => reject(f(a)), b => resolve(g(b)))
     }, this.cleanup)
-  },
+  }
 
   ap(taskB) {
     const cleanupBoth = ([stateA, stateB]) => {
@@ -97,7 +110,7 @@ Task.prototype = {
 
       return combinedState = [stateA, stateB]
     }, cleanupBoth)
-  },
+  }
 
   concat(taskB) {
     const cleanupBoth = ([stateA, stateB]) => {
@@ -124,33 +137,27 @@ Task.prototype = {
         taskB.fork(guard(reject), guard(resolve))
       ]
     }, cleanupBoth)
-  },
+  }
 
   swap() {
     return new Task((reject, resolve) => {
       return this.fork(a => resolve(a), b => return reject(b))
     }, this.cleanup)
-  },
+  }
 
   rejectedMap(f) {
     return new Task((reject, resolve) => {
       return this.fork(a => reject(f(a)), b => resolve(b))
     }, this.cleanup)
-  },
+  }
 
   cata(pattern) {
     return this.fold(pattern.Rejected, pattern.Resolved)
-  },
-
-  empty() {
-    return new Task(_ => _)
-  },
+  }
 
   toString() {
     return 'Task'
   }
 }
 
-Task.of = Task.prototype.of
-Task.rejected = Task.prototype.rejected
-Task.empty = Task.prototype.empty
+export default Task
