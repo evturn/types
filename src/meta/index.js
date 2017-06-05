@@ -1,11 +1,6 @@
-const assert = condition => {
-  if (condition !== true && condition !== false) {
-    throw new TypeError('Assertions should be only of booleans.');
-  }
-  if (!condition) {
-    throw new Error('An assertion needs a condition argument.');
-  }
-};
+import assert from './assert';
+export EnqueueJob from './enqueue-job';
+export Type from './type';
 
 const InternalSlot = () => {
   const Slots = new WeakMap();
