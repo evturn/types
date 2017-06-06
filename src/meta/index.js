@@ -1,4 +1,5 @@
 import assert from './assert';
+export Callable from 'callable';
 export EnqueueJob from './enqueue-job';
 export Type from './type';
 
