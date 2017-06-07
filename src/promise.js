@@ -156,7 +156,7 @@ const CreatePromiseCapabilityRecord = promise => {
 };
 
 const GetCapabilitiesExecutorFunction = () => {
-  const CapabilitiesExecutor = (resolve, reject) {
+  const CapabilitiesExecutor = (resolve, reject) => {
     assert(Slots.has(CapabilitiesExecutor, $$.capability));
     const capability = Slots.get(CapabilitiesExecutor, $$.capability);
     if (capability[$$.resolve] !== undefined) {
@@ -189,7 +189,7 @@ class Promise {
     try {
       executor.call(undefined, resolvers[$$.resolve], resolvers[$$.reject]);
     } catch (e) {
-      resolvers[$$reject].call(undefined, e);
+      resolvers[$$.reject].call(undefined, e);
     }
     return promise;
   }
